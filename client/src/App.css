@@ -1,0 +1,21 @@
+
+input{
+  &:-webkit-autofill{
+    font-size: 20px;
+  -webkit-box-shadow:  0 0 0px 1000px rgb(255, 255, 255) inset;
+  -webkit-text-fill-color: #9CA3AF;
+  }
+  &:-webkit-autofill:first-line {
+  
+    font-size: 16px !important;
+    
+  }
+  &:-webkit-autofill:hover {
+  
+    font-size: 20px !important;
+    
+  }
+}
+
+
+
