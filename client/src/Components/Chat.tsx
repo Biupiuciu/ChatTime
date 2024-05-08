@@ -149,7 +149,7 @@ export const Chat = () => {
 
   const connectToWs = (contactId: any) => {
     console.log("ws");
-    const ws = new WebSocket("ws://localhost:4040");
+    const ws = new WebSocket(import.meta.env.VITE_API_URL + ":4040");
     console.log("ws1");
     setWebSo(ws);
     console.log("ws2");

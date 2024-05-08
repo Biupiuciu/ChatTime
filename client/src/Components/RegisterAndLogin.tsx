@@ -70,8 +70,8 @@ export const RegisterAndLogin = () => {
         </div>
 
         {isRegistered && (
-          <div className="flex items-center h-1">
-            <h2 className="text-medium text-sm pl-6">
+          <div className="flex items-center h-1 w-full justify-center ">
+            <h2 className="text-rose-400 text-sm ">
               Username has already been registered.
             </h2>
           </div>
