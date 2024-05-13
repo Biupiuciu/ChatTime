@@ -73,6 +73,8 @@ app.post('/login',async(req,res)=>{
             obj.isLogOut=false;
             
           
+        }else{
+            res.json('cantlogin');
         }
     }else{
         res.json('cantlogin');
