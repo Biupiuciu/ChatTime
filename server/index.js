@@ -198,7 +198,7 @@ app.post('/register', async (req,res)=>{
     }
    
 });
-const server= app.listen(4040||process.env.PORT,"https://chattime-1.onrender.com")
+const server= app.listen(4040||process.env.PORT)
 
 const webSockectServer=new ws.WebSocketServer({server});
 
