@@ -13,12 +13,12 @@ const bodyParser = require("body-parser");
 const { connect } = require('http2');
 
 const corsConf = {
-    origin: "*",
+   
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     preflightContinue: false,
     optionsSuccessStatus: 204,
     credentials: true,
-    // origin: [process.env.CLIENT_URL1,process.env.CLIENT_URL2],
+     origin: [process.env.CLIENT_URL1,process.env.CLIENT_URL2,process.env.CLIENT_URL3,process.env.CLIENT_URL4],
   }
   
   
