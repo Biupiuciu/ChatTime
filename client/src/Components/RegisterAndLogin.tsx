@@ -2,7 +2,7 @@ import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import { useState } from "react";
 import image from "../assets/speech bubble with client icon.png";
-import axios, { AxiosHeaders } from "axios";
+import axios from "axios";
 import { useDispatch } from "react-redux";
 import { LOGIN } from "../feature/user";
 export const RegisterAndLogin = () => {

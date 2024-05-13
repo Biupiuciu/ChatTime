@@ -122,7 +122,7 @@ app.post('/unread',async(req,res)=>{
     try{
         console.log("1 ",req.body.id.id);
         const currentid = req.body.id.id;
-        //console.log('11 ',currentid);
+        console.log('11 ',currentid);
         const unread=await Unread.find({
             currentuser:{$in:currentid },
         }).sort({ createdAt: 1 });
@@ -193,7 +193,7 @@ const server= app.listen(4040||process.env.PORT)
 const webSockectServer=new ws.WebSocketServer({server});
 
 webSockectServer.on('connection',(connection,req)=>{
-
+    console.log('CONNECT');
     function sendOnlineUsers(){
         [...webSockectServer.clients].forEach(client=>{
             client.send(JSON.stringify({
@@ -290,6 +290,8 @@ webSockectServer.on('connection',(connection,req)=>{
             [...webSockectServer.clients].filter(client=>client.userId===contact).forEach(client=>{
                 client.send(JSON.stringify({text,sender:connection.userId,contact,_id:createdMessage._id}))
             })
+
+            
         }
         
     })

@@ -48,7 +48,8 @@ export const Chat = () => {
       //   console.log("added1");
       //   setallMessages((prev) => [...prev, { ...message }]);
       // }
-      console.log(contact);
+      //console.log(contact);
+      console.log("MESSAGE GET!");
       getUnread();
     }
   };
@@ -89,6 +90,7 @@ export const Chat = () => {
 
   const getUnread = async () => {
     try {
+      console.log("TRYGET:", id);
       const response = await axios.post("/unread", { id: id });
       console.log(response.data);
       const newSet = new Set(response.data);
@@ -149,7 +151,7 @@ export const Chat = () => {
 
   const connectToWs = (contactId: any) => {
     console.log("ws");
-    const ws = new WebSocket(import.meta.env.VITE_API_URL + ":4040/");
+    const ws = new WebSocket(import.meta.env.VITE_API_URL);
     console.log("ws1");
     setWebSo(ws);
     console.log("ws2");
