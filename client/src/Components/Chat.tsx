@@ -48,7 +48,7 @@ export const Chat = () => {
       //   console.log("added1");
       //   setallMessages((prev) => [...prev, { ...message }]);
       // }
-      //console.log(contact);
+      console.log(contact);
       console.log("MESSAGE GET!");
       getUnread();
     }
