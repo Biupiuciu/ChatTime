@@ -120,7 +120,7 @@ app.get('/people',async(req,res)=>{
 
 app.post('/unread',async(req,res)=>{
     try{
-        console.log("1 ",req.body.id.id);
+        console.log("1 ",req);
         const currentid = req.body.id.id;
         console.log('11 ',currentid);
         const unread=await Unread.find({
