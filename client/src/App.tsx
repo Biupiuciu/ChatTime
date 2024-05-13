@@ -8,7 +8,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { LOGIN } from "./feature/user";
 function App() {
-  axios.defaults.baseURL = "http://localhost:4040/";
+  axios.defaults.baseURL = "https://chattime-1.onrender.com";
   //for cookies, HTTP authentication information
   axios.defaults.withCredentials = true;
   const dispatch = useDispatch();

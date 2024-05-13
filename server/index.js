@@ -12,7 +12,16 @@ const Unread=require('../server/models/Unread');
 const bodyParser = require("body-parser");
 const { connect } = require('http2');
 
-
+const corsConf = {
+    origin: "*",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+    credentials: true,
+    origin: [process.env.CLIENT_URL1,process.env.CLIENT_URL2],
+  }
+  
+  
 dotenv.config();
 try{
     mongoose.connect(process.env.MONGO_URL);
@@ -22,12 +31,13 @@ try{
 let obj ={isLogOut:false};
 
 const app=express();
-app.use(cookieParser());
-app.use(cors({
-    credentials: true,
-    origin: [process.env.CLIENT_URL1,process.env.CLIENT_URL2],
-  }));
 
+app.use(cookieParser());
+// app.use(cors({
+//     credentials: true,
+//     origin: [process.env.CLIENT_URL1,process.env.CLIENT_URL2],
+//   }));
+app.use(cors(corsConf));
 app.use(bodyParser.urlencoded({ extended: false }))
 .use(bodyParser.json());
 
@@ -188,12 +198,13 @@ app.post('/register', async (req,res)=>{
     }
    
 });
-const server= app.listen(4040||process.env.PORT)
+const server= app.listen(4040||process.env.PORT,"https://chattime-1.onrender.com")
 
 const webSockectServer=new ws.WebSocketServer({server});
 
 webSockectServer.on('connection',(connection,req)=>{
 
+    console.log("connect!");
     function sendOnlineUsers(){
         [...webSockectServer.clients].forEach(client=>{
             client.send(JSON.stringify({
