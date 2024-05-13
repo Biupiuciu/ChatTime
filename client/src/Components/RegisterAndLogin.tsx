@@ -16,6 +16,7 @@ export const RegisterAndLogin = () => {
   let headers = {
     "Content-Type": "application/json",
     Accept: "application/json",
+
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "*",
     "Access-Control-Allow-Credentials": "true",
@@ -24,7 +25,7 @@ export const RegisterAndLogin = () => {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     try {
-      const url = isForLogIn ? "login" : "register";
+      const url = isForLogIn ? "/login" : "/register";
       const { data } = await axios.post(
         url,
         {

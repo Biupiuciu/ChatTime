@@ -12,16 +12,7 @@ const Unread=require('../server/models/Unread');
 const bodyParser = require("body-parser");
 const { connect } = require('http2');
 
-const corsConf = {
-    origin: "*",
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
-    credentials: true,
-    origin: [process.env.CLIENT_URL1,process.env.CLIENT_URL2,process.env.CLIENT_URL3,process.env.CLIENT_URL4],
-  }
-  
-  
+
 dotenv.config();
 try{
     mongoose.connect(process.env.MONGO_URL);
@@ -31,13 +22,12 @@ try{
 let obj ={isLogOut:false};
 
 const app=express();
-
 app.use(cookieParser());
-// app.use(cors({
-//     credentials: true,
-//     origin: [process.env.CLIENT_URL1,process.env.CLIENT_URL2],
-//   }));
-app.use(cors(corsConf));
+app.use(cors({
+    credentials: true,
+    origin: [process.env.CLIENT_URL1,process.env.CLIENT_URL2],
+  }));
+
 app.use(bodyParser.urlencoded({ extended: false }))
 .use(bodyParser.json());
 
@@ -204,7 +194,6 @@ const webSockectServer=new ws.WebSocketServer({server});
 
 webSockectServer.on('connection',(connection,req)=>{
 
-    console.log("connect!");
     function sendOnlineUsers(){
         [...webSockectServer.clients].forEach(client=>{
             client.send(JSON.stringify({
@@ -305,4 +294,3 @@ webSockectServer.on('connection',(connection,req)=>{
         
     })
 });
-//eyLiq6och2Er6cIU
