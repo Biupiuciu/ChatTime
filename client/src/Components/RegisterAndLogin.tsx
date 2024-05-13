@@ -2,7 +2,7 @@ import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import { useState } from "react";
 import image from "../assets/speech bubble with client icon.png";
-import axios from "axios";
+import axios, { AxiosHeaders } from "axios";
 import { useDispatch } from "react-redux";
 import { LOGIN } from "../feature/user";
 export const RegisterAndLogin = () => {
@@ -13,14 +13,26 @@ export const RegisterAndLogin = () => {
   const [isTyped, setIsTyped] = useState(true);
   const [isForLogIn, setIsForLogIn] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
+  let headers = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "*",
+    "Access-Control-Allow-Credentials": "true",
+  };
+
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     try {
       const url = isForLogIn ? "login" : "register";
-      const { data } = await axios.post(url, {
-        username,
-        password,
-      });
+      const { data } = await axios.post(
+        url,
+        {
+          username,
+          password,
+        },
+        { headers }
+      );
       if (data.id) {
         LoginAfterRegister();
       }
