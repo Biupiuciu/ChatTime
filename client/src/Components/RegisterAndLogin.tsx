@@ -14,10 +14,10 @@ export const RegisterAndLogin = () => {
   const [isForLogIn, setIsForLogIn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
+  const [isUnmatched, setIsUnmatched] = useState(false);
   let headers = {
     "Content-Type": "application/json",
     Accept: "application/json",
-
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "*",
     "Access-Control-Allow-Credentials": "true",
@@ -26,6 +26,8 @@ export const RegisterAndLogin = () => {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setIsLoading(true);
+    setIsRegistered(false);
+    setIsUnmatched(false);
     try {
       const url = isForLogIn ? "/login" : "/register";
       const { data } = await axios.post(
@@ -37,15 +39,13 @@ export const RegisterAndLogin = () => {
         { headers }
       );
       if (data == "cantlogin") {
+        setIsUnmatched(true);
         setIsLoading(false);
-        console.log(data);
         return;
       }
       if (data.id) {
         LoginAfterRegister();
       }
-      console.log(data);
-      console.log(isRegistered);
 
       if (data != "alreadyregistered") {
         dispatch(LOGIN({ id: data, username: username }));
@@ -72,7 +72,7 @@ export const RegisterAndLogin = () => {
 
         <div
           className={`w-full h-14 py-3 px-4 border-1.5 ${
-            isRegistered ? "border-rose-400" : "border-lime-300"
+            isRegistered || isUnmatched ? "border-rose-400" : "border-lime-300"
           } rounded-full flex items-center gap-3`}
           onClick={() => {
             setIsTyped(false);
@@ -87,6 +87,7 @@ export const RegisterAndLogin = () => {
             onChange={(e) => {
               setUserName(e.target.value);
               setIsRegistered(false);
+              setIsUnmatched(false);
             }}
             className="w-full  border-none   bg-white  outline-none text-medium"
           />
@@ -99,7 +100,13 @@ export const RegisterAndLogin = () => {
             </h2>
           </div>
         )}
-
+        {isUnmatched && (
+          <div className="flex items-center h-1 w-full justify-center ">
+            <h2 className="text-rose-400 text-sm ">
+              Username and password are not matched.
+            </h2>
+          </div>
+        )}
         <div
           className="w-full h-14 py-3 px-4 border-1.5 border-lime-300 rounded-full flex items-center gap-3"
           onClick={() => {
@@ -152,6 +159,8 @@ export const RegisterAndLogin = () => {
           onClick={() => {
             if (!isForLogIn) {
               setIsRegistered(false);
+            } else {
+              setIsUnmatched(false);
             }
             setIsForLogIn(!isForLogIn);
             setPassword("");
@@ -161,12 +170,15 @@ export const RegisterAndLogin = () => {
           {isForLogIn ? "Register" : "Log in"}
         </h2>
       </div>
-      <div className="mt-16  text-sm text-medium">
-        <h2 className="m-auto">Test User 1: Sean / Sean</h2>
-      </div>
-      <div className="mt-2 text-sm text-medium">
-        <h2 className="mx-auto">Test User 2: BC / BC</h2>
-      </div>
+
+      <h2 className="mt-16  text-sm text-medium">
+        Please use two different browsers to log in to the following two
+        accounts for testing.
+      </h2>
+
+      <h2 className="mt-2  text-sm text-medium">Test User 1: Sean / Sean</h2>
+
+      <h2 className="mt-2 text-sm text-medium">Test User 2: BC / BC</h2>
     </div>
   );
 };

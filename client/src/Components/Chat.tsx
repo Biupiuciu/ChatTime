@@ -25,6 +25,7 @@ export const Chat = () => {
   });
   const { username, id } = user.user;
   const isLogIn = user.isLogIn;
+
   const setOnlineContacts = (contactList: Array<Object>) => {
     const people: any = {};
     contactList.forEach(({ userId, username }: any) => {
