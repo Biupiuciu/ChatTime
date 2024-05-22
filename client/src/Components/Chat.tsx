@@ -18,13 +18,34 @@ export const Chat = () => {
   const [contactId, setContactId] = useState<any>("");
   const [message, setMessage] = useState("");
   const [allMessages, setallMessages] = useState([{}]);
-  const [isLogout, setIsLogout] = useState(false);
   const [unReadSet, setunReadSet] = useState(new Set());
   const user = useSelector((state: IRootState) => {
     return state.user;
   });
+
   const { username, id } = user.user;
   const isLogIn = user.isLogIn;
+
+  const connectToWs = (contactId: any) => {
+    console.log("ws");
+    const ws = new WebSocket(import.meta.env.VITE_API_URL);
+    console.log("ws1");
+    setWebSo(ws);
+    console.log("ws2");
+    ws.addEventListener("message", (event) => handleMessage(event, contactId));
+    //reconnect
+    ws.addEventListener("close", handleDisconnection);
+  };
+
+  // Initial Connection
+  useEffect(() => {
+    connectToWs(contactId);
+    getUnread();
+
+    return () => {
+      closeWebsocket();
+    };
+  }, []);
 
   const setOnlineContacts = (contactList: Array<Object>) => {
     const people: any = {};
@@ -49,7 +70,7 @@ export const Chat = () => {
       //   console.log("added1");
       //   setallMessages((prev) => [...prev, { ...message }]);
       // }
-      console.log(contact);
+
       console.log("MESSAGE GET!");
       getUnread();
     }
@@ -76,15 +97,17 @@ export const Chat = () => {
     setMessage("");
   };
 
+  const closeWebsocket = () => {
+    webso?.removeEventListener("close", handleDisconnection);
+    setWebSo(null);
+    webso?.close();
+  };
+
   const handleLogOut = async () => {
     await axios.post("/logout").then((response) => {
       if (response.data === "ok") {
-        setIsLogout(true);
-        console.log("? ", isLogout);
-        setWebSo(null);
-        webso?.close();
-
-        //dispatch(LOGOUT());
+        closeWebsocket();
+        dispatch(LOGOUT());
       }
     });
   };
@@ -101,12 +124,6 @@ export const Chat = () => {
       console.log(err);
     }
   };
-
-  useEffect(() => {
-    //console.log("effect");
-    connectToWs(contactId);
-    getUnread();
-  }, []);
 
   useEffect(() => {
     const div = divUnderMessages.current;
@@ -140,45 +157,23 @@ export const Chat = () => {
     }
   };
 
-  const handleClose = () => {
+  const handleDisconnection = () => {
+    console.log("disconnected");
     setTimeout(() => {
-      console.log("logout? ", isLogout);
-      if (isLogout) {
+      if (isLogIn) {
         console.log(isLogIn, "Disconnected. Trying to reconnect.");
         connectToWs(contactId);
       }
     }, 5000);
   };
 
-  const connectToWs = (contactId: any) => {
-    console.log("ws");
-    const ws = new WebSocket(import.meta.env.VITE_API_URL);
-    console.log("ws1");
-    setWebSo(ws);
-    console.log("ws2");
-    ws.addEventListener("message", (event) => handleMessage(event, contactId));
-    //reconnect
-    ws.addEventListener("close", handleClose);
-  };
   //get history chat messages
-  useEffect(() => {
-    if (contactId) {
-      axios.get("/message/" + contactId).then((result) => {
-        setallMessages(result.data);
-      });
-    }
-  }, [contactId]);
-
-  //logout remove listener
-  useEffect(() => {
-    console.log(isLogout, " 11");
-    if (isLogout) {
-      webso?.removeEventListener("close", handleClose);
-      setWebSo(null);
-      webso?.close();
-      dispatch(LOGOUT());
-    }
-  }, [isLogout]);
+  const openChatUser = (contactId: string) => {
+    setContactId(contactId);
+    axios.get("/message/" + contactId).then((result) => {
+      setallMessages(result.data);
+    });
+  };
 
   useEffect(() => {
     axios.get("/people").then((result) => {
