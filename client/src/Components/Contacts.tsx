@@ -26,11 +26,6 @@ export const Contacts = forwardRef((props: any, ref) => {
     }
   });
 
-  const listExcludeUser = [...list];
-  if (id) {
-    delete listExcludeUser[0][id];
-  }
-
   const handleUnReadClick = async (deleteId: any) => {
     console.log("READ!");
     try {
@@ -48,7 +43,7 @@ export const Contacts = forwardRef((props: any, ref) => {
 
   offlineContacts.forEach((user: any) => {
     if (!Object.keys(list[0]).includes(user._id)) {
-      listExcludeUser[1][user._id] = user.username;
+      list[1][user._id] = user.username;
     }
   });
 
@@ -81,11 +76,11 @@ export const Contacts = forwardRef((props: any, ref) => {
 
   return (
     <div className="  absolute overflow-y-scroll right-4 left-4 bottom-4 top-4 ">
-      {listExcludeUser.map((list: any) => {
+      {list.map((list: any) => {
         return (
           <>
             {Object.keys(list).map((userId) => {
-              if (userId != "isOnline") {
+              if (userId != "isOnline" && userId != id) {
                 const selected = contactId === userId;
                 return (
                   <div
