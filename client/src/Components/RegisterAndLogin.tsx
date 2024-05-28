@@ -25,21 +25,21 @@ export const RegisterAndLogin = () => {
         username,
         password,
       });
+      console.log(data);
       if (data == "cantlogin") {
+        setIsFailed(true);
+        setIsLoading(false);
+        return;
+      }
+      if (data == "alreadyregistered") {
         setIsFailed(true);
         setIsLoading(false);
         return;
       }
 
       if (data.id) {
-        LoginAfterRegister();
-      }
-
-      if (data != "alreadyregistered") {
-        dispatch(LOGIN({ id: data, username: username }));
-      } else {
-        setIsFailed(true);
-        setIsLoading(false);
+        Login();
+        return;
       }
     } catch (err) {
       console.log(err);
@@ -47,7 +47,7 @@ export const RegisterAndLogin = () => {
     }
   };
 
-  const LoginAfterRegister = async () => {
+  const Login = async () => {
     const response = await axios.get("/profile");
     const { data } = response.data;
     const { userId, username } = data;

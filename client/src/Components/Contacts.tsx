@@ -53,8 +53,8 @@ export const Contacts = forwardRef((props: any, ref) => {
       const response = await axios.post("/unread", { id: id });
       console.log(response.data);
       const newSet = new Set(response.data);
-      console.log(contactId);
-      console.log(newSet.has(contactId));
+      //   console.log(contactId);
+      //   console.log(newSet.has(contactId));
       if (newSet.has(contactId)) {
         handleUnReadClick(contactId);
       }
@@ -66,12 +66,11 @@ export const Contacts = forwardRef((props: any, ref) => {
 
   //get offline list
   useEffect(() => {
+    getUnread();
     axios.get("/people").then((result) => {
       const otherUsers = result.data.filter((user: any) => user._id !== id);
       setOfflineUsers(otherUsers);
     });
-
-    getUnread();
   }, []);
 
   return (
