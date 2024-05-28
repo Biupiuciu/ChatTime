@@ -1,9 +1,11 @@
-export const Offlineselection = ({
+export const Contact = ({
   username,
   userId,
   isSelected,
+  isOnline,
   unread,
-}: any) => {
+}: //   unread,
+any) => {
   const colors = [
     "bg-lime-300 ",
     "bg-orange-400 ",
@@ -19,17 +21,21 @@ export const Offlineselection = ({
 
   return (
     <div
-      className={`w-full px-2 py-3 flex items-center text-md ${selectedFontWeight} `}
+      className={`sm:px-2 py-3 flex w-full items-center  text-md ${selectedFontWeight} `}
     >
       <div
         className={`hidden md:flex relative rounded-full aspect-ratio aspect-square h-12 ${color}  items-center justify-center mr-4 `}
       >
-        <div className="absolute rounded-full aspect-ratio aspect-square h-4 bg-zinc-200 bottom-0 right-0  border-2 border-white "></div>
+        <div
+          className={`absolute rounded-full aspect-ratio aspect-square h-4 ${
+            isOnline ? "bg-green-500" : "bg-zinc-200"
+          } bottom-0 right-0  border-2 border-white`}
+        ></div>
         {username[0]}
       </div>
       <h2 className="grow text-sm sm:text-lg">{username}</h2>
       {isUnread && (
-        <div className=" rounded-full aspect-ratio aspect-square h-2 ml-1 sm:h-3 bg-red-600 "></div>
+        <div className=" rounded-full aspect-ratio aspect-square h-2 ml-1 sm:ml-2 md:h-3 bg-red-600 "></div>
       )}
     </div>
   );

@@ -18,6 +18,7 @@ function App() {
         const response = await axios.get("/profile");
         const { data } = response.data;
         const { userId, username } = data;
+        console.log(data);
         dispatch(LOGIN({ id: userId, username: username }));
       } catch (err) {
         console.log(err);

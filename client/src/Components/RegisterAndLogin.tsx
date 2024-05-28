@@ -13,36 +13,24 @@ export const RegisterAndLogin = () => {
   const [isTyped, setIsTyped] = useState(true);
   const [isForLogIn, setIsForLogIn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isRegistered, setIsRegistered] = useState(false);
-  const [isUnmatched, setIsUnmatched] = useState(false);
-  let headers = {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "*",
-    "Access-Control-Allow-Credentials": "true",
-  };
-
+  const [isFailed, setIsFailed] = useState(false);
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setIsLoading(true);
-    setIsRegistered(false);
-    setIsUnmatched(false);
+    setIsFailed(false);
+
     try {
       const url = isForLogIn ? "/login" : "/register";
-      const { data } = await axios.post(
-        url,
-        {
-          username,
-          password,
-        },
-        { headers }
-      );
+      const { data } = await axios.post(url, {
+        username,
+        password,
+      });
       if (data == "cantlogin") {
-        setIsUnmatched(true);
+        setIsFailed(true);
         setIsLoading(false);
         return;
       }
+
       if (data.id) {
         LoginAfterRegister();
       }
@@ -50,7 +38,7 @@ export const RegisterAndLogin = () => {
       if (data != "alreadyregistered") {
         dispatch(LOGIN({ id: data, username: username }));
       } else {
-        setIsRegistered(true);
+        setIsFailed(true);
         setIsLoading(false);
       }
     } catch (err) {
@@ -72,7 +60,7 @@ export const RegisterAndLogin = () => {
 
         <div
           className={`w-full h-14 py-3 px-4 border-1.5 ${
-            isRegistered || isUnmatched ? "border-rose-400" : "border-lime-300"
+            isFailed ? "border-rose-400" : "border-lime-300"
           } rounded-full flex items-center gap-3`}
           onClick={() => {
             setIsTyped(false);
@@ -86,27 +74,22 @@ export const RegisterAndLogin = () => {
             value={username}
             onChange={(e) => {
               setUserName(e.target.value);
-              setIsRegistered(false);
-              setIsUnmatched(false);
+              setIsFailed(false);
             }}
             className="w-full  border-none   bg-white  outline-none text-medium"
           />
         </div>
 
-        {isRegistered && (
+        {isFailed && (
           <div className="flex items-center h-1 w-full justify-center ">
             <h2 className="text-rose-400 text-sm ">
-              Username has already been registered.
+              {isForLogIn
+                ? "Username and password are not matched."
+                : "Username has already been registered."}
             </h2>
           </div>
         )}
-        {isUnmatched && (
-          <div className="flex items-center h-1 w-full justify-center ">
-            <h2 className="text-rose-400 text-sm ">
-              Username and password are not matched.
-            </h2>
-          </div>
-        )}
+
         <div
           className="w-full h-14 py-3 px-4 border-1.5 border-lime-300 rounded-full flex items-center gap-3"
           onClick={() => {
@@ -157,11 +140,7 @@ export const RegisterAndLogin = () => {
         <h2
           className="underline decoration-solid hover:text-lime-300"
           onClick={() => {
-            if (!isForLogIn) {
-              setIsRegistered(false);
-            } else {
-              setIsUnmatched(false);
-            }
+            setIsFailed(false);
             setIsForLogIn(!isForLogIn);
             setPassword("");
             setUserName("");
