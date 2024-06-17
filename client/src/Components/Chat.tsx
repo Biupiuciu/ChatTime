@@ -1,36 +1,29 @@
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
-import { useDispatch, useSelector } from "react-redux";
-import { IRootState } from "../main";
-import { useEffect, useState, useRef } from "react";
-import { LOGOUT } from "../feature/user";
+import { useEffect, useState } from "react";
+
 import { Contacts } from "./Contacts";
 import { MessageWindow } from "./MessageWindow";
 import noContactImg from "../assets/comments on internet.png";
-
+import { useChatStore } from "../store/chatStore";
+import { useContactsStore } from "../store/contactsStore";
+import { useUserStore } from "../store/userStore";
 import axios from "axios";
-interface WindowRefType {
-  getAllMessages: (s: string) => void;
-  getNewMessage: () => void;
-}
-interface ContactRefType {
-  getUnread: () => void;
-}
+
 export const Chat = () => {
   const [webso, setWebSo] = useState<WebSocket | null>();
   const [contactId, setContactId] = useState<string>("");
   const [isOpenChatWindow, setIsOpenChatWindow] = useState(false);
   const [contactName, setContactName] = useState("");
   const [onlineContacts, setOnlineContacts] = useState([{}]);
-  const dispatch = useDispatch();
-  const user = useSelector((state: IRootState) => {
-    return state.user;
-  });
-  const { username, id } = user.user;
-  const isLogIn = user.isLogIn;
-  const windowRef = useRef<WindowRefType | null>(null);
-  const contactRef = useRef<ContactRefType | null>(null);
+  const { isLogIn, user, LOGOUT } = useUserStore((state) => state);
 
+  const { username, id } = user;
+
+  const { getAllMessages, getNewMessage } = useChatStore((state) => state);
+  const { getUnread, handleUnReadClick, unReadSet } = useContactsStore(
+    (state) => state
+  );
   const handleDisconnection = () => {
     console.log("disconnected");
     setTimeout(() => {
@@ -46,8 +39,8 @@ export const Chat = () => {
     if ("online" in message) {
       setOnlineContacts(message.online);
     } else if ("text" in message) {
-      windowRef.current?.getNewMessage();
-      contactRef.current?.getUnread();
+      getNewMessage(contactId);
+      getUnread(contactId, id, handleUnReadClick);
       console.log("MESSAGE GET!");
     }
   };
@@ -76,7 +69,7 @@ export const Chat = () => {
     }
     setContactId(newContactId);
     setContactName(newContactName);
-    windowRef.current?.getAllMessages(newContactId);
+    getAllMessages(newContactId);
   };
 
   const closeWebsocket = () => {
@@ -89,7 +82,7 @@ export const Chat = () => {
     await axios.post("/logout").then((response) => {
       if (response.data === "ok") {
         closeWebsocket();
-        dispatch(LOGOUT());
+        LOGOUT();
       }
     });
   };
@@ -109,7 +102,6 @@ export const Chat = () => {
       <div className="grow grid grid-cols-7 ">
         <div className="h-full col-span-2 p-6 relative">
           <Contacts
-            ref={contactRef}
             contactId={contactId}
             openChatUser={openChatUser}
             contactList={onlineContacts}
@@ -117,7 +109,6 @@ export const Chat = () => {
         </div>
         {isOpenChatWindow ? (
           <MessageWindow
-            ref={windowRef}
             contactName={contactName}
             contactId={contactId}
             id={id}

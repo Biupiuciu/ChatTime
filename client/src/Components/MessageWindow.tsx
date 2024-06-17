@@ -1,36 +1,22 @@
-import {
-  useState,
-  useRef,
-  useEffect,
-  forwardRef,
-  useImperativeHandle,
-} from "react";
+import { useState, useRef, useEffect } from "react";
 import { uniqBy } from "lodash";
-import axios from "axios";
-export const MessageWindow = forwardRef((props: any, ref) => {
+import { useChatStore } from "../store/chatStore";
+export const MessageWindow = (props: any) => {
   const { contactName, contactId, id, webso } = props;
   const [message, setMessage] = useState("");
-  const [allmessages, setallmessages] = useState([{}]);
   const divUnderMessages = useRef<HTMLDivElement>(null);
 
-  const getAllMessages = (newContactId: string) => {
-    console.log("Get ID:", newContactId);
-    axios.get("/message/" + newContactId).then((result) => {
-      setallmessages(result.data);
-    });
-  };
+  const { allMessages, getAllMessages, getNewMessage } = useChatStore(
+    (state) => state
+  );
 
-  const getNewMessage = () => {
-    console.log("CONTACT ID:", contactId);
-    axios.get("/message/" + contactId).then((result) => {
-      setallmessages(result.data);
-    });
-  };
-
-  useImperativeHandle(ref, () => ({
-    getAllMessages,
-    getNewMessage,
-  }));
+  useEffect(() => {
+    const div = divUnderMessages.current;
+    console.log(allMessages);
+    if (div) {
+      div.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
+  }, [allMessages]);
 
   useEffect(() => {
     getAllMessages(contactId);
@@ -54,18 +40,11 @@ export const MessageWindow = forwardRef((props: any, ref) => {
       })
     );
 
-    getNewMessage();
+    getNewMessage(contactId);
     setMessage("");
   };
 
-  useEffect(() => {
-    const div = divUnderMessages.current;
-    if (div) {
-      div.scrollIntoView({ behavior: "smooth", block: "end" });
-    }
-  }, [allmessages]);
-
-  const noDupMessages = uniqBy(allmessages, "_id");
+  const noDupMessages = uniqBy(allMessages, "_id");
 
   const ShowMessage = noDupMessages.map((message) => {
     if (message) {
@@ -133,4 +112,4 @@ export const MessageWindow = forwardRef((props: any, ref) => {
       </form>
     </div>
   );
-});
+};

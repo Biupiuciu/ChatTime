@@ -1,24 +1,21 @@
 import axios from "axios";
-import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
-import { IRootState } from "../main";
-import { useSelector } from "react-redux";
-import { Contact } from "./Contact";
-export const Contacts = forwardRef((props: any, ref) => {
-  const { contactId, contactList, openChatUser } = props;
+import { useState, useEffect } from "react";
 
-  const user = useSelector((state: IRootState) => {
-    return state.user;
-  });
-  const [unReadSet, setunReadSet] = useState(new Set());
-  const { id } = user.user;
+import { Contact } from "./Contact";
+import { useContactsStore } from "../store/contactsStore";
+import { useUserStore } from "../store/userStore";
+export const Contacts = (props: any) => {
+  const { contactId, contactList, openChatUser } = props;
+  const { unReadSet, getUnread, handleUnReadClick } = useContactsStore(
+    (state) => state
+  );
+  const { user } = useUserStore((state) => state);
+
+  const { id } = user;
 
   const list: any = [{ isOnline: true }, { isOnline: false }];
 
   const [offlineContacts, setOfflineUsers] = useState([]);
-
-  useImperativeHandle(ref, () => ({
-    getUnread,
-  }));
 
   contactList.forEach(({ userId, username }: any) => {
     if (userId) {
@@ -26,47 +23,15 @@ export const Contacts = forwardRef((props: any, ref) => {
     }
   });
 
-  const handleUnReadClick = async (deleteId: any) => {
-    console.log("READ!");
-    try {
-      await axios.delete("/read", {
-        params: { id: id, deleteId: deleteId },
-      });
-    } catch (err) {
-      console.log(err);
-    } finally {
-      const newSet = new Set(unReadSet);
-      newSet.delete(deleteId);
-      setunReadSet(newSet);
-    }
-  };
-
   offlineContacts.forEach((user: any) => {
     if (!Object.keys(list[0]).includes(user._id)) {
       list[1][user._id] = user.username;
     }
   });
 
-  const getUnread = async () => {
-    try {
-      console.log("TRYGET:", id);
-      const response = await axios.post("/unread", { id: id });
-      console.log(response.data);
-      const newSet = new Set(response.data);
-      //   console.log(contactId);
-      //   console.log(newSet.has(contactId));
-      if (newSet.has(contactId)) {
-        handleUnReadClick(contactId);
-      }
-      setunReadSet(newSet);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   //get offline list
   useEffect(() => {
-    getUnread();
+    getUnread(contactId, id, handleUnReadClick);
     axios.get("/people").then((result) => {
       const otherUsers = result.data.filter((user: any) => user._id !== id);
       setOfflineUsers(otherUsers);
@@ -90,7 +55,7 @@ export const Contacts = forwardRef((props: any, ref) => {
                       openChatUser(userId, list[userId]);
 
                       if (unReadSet.has(userId)) {
-                        handleUnReadClick(userId);
+                        handleUnReadClick(userId, id, unReadSet);
                       }
                     }}
                   >
@@ -110,4 +75,4 @@ export const Contacts = forwardRef((props: any, ref) => {
       })}
     </div>
   );
-});
+};

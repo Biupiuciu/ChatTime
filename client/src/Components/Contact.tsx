@@ -17,9 +17,7 @@ export const Contact = ({
   const color = isSelected ? "bg-rose-500" : colors[colorIndex];
   const selectedFontWeight = isSelected && "font-semibold";
   const isUnread = unread.has(userId);
-  if (userId == "65fd5648b7421e20d5e6f1b7") {
-    // console.log(unread, " ", userId);
-  }
+
   return (
     <div
       className={`sm:px-2 py-3 flex w-full items-center  text-md ${selectedFontWeight} `}

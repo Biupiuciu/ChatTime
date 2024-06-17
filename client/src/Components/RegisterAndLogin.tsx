@@ -3,17 +3,17 @@ import LockOpenIcon from "@mui/icons-material/LockOpen";
 import { useState } from "react";
 import image from "../assets/speech bubble with client icon.png";
 import axios from "axios";
-import { useDispatch } from "react-redux";
-import { LOGIN } from "../feature/user";
+import { useUserStore } from "../store/userStore";
+import { LoginApi } from "../api/LoginApi";
+import { RegisterOrLoginApi } from "../api/RegisterAndLoginApi";
 export const RegisterAndLogin = () => {
-  const dispatch = useDispatch();
-
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [isTyped, setIsTyped] = useState(true);
   const [isForLogIn, setIsForLogIn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
+  const { LOGIN } = useUserStore((state) => state);
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setIsLoading(true);
@@ -21,17 +21,19 @@ export const RegisterAndLogin = () => {
 
     try {
       const url = isForLogIn ? "/login" : "/register";
-      const { data } = await axios.post(url, {
+
+      const data = await RegisterOrLoginApi.registerorlogin({
+        url,
         username,
         password,
       });
       console.log(data);
-      if (data == "cantlogin") {
+      if (data.error == "cantlogin") {
         setIsFailed(true);
         setIsLoading(false);
         return;
       }
-      if (data == "alreadyregistered") {
+      if (data.error == "alreadyregistered") {
         setIsFailed(true);
         setIsLoading(false);
         return;
@@ -48,10 +50,9 @@ export const RegisterAndLogin = () => {
   };
 
   const Login = async () => {
-    const response = await axios.get("/profile");
-    const { data } = response.data;
+    const data = await LoginApi.login({});
     const { userId, username } = data;
-    dispatch(LOGIN({ id: userId, username: username }));
+    LOGIN({ id: userId, username: username });
   };
   return (
     <div className="w-screen h-screen items-center justify-center flex flex-col">
@@ -157,7 +158,7 @@ export const RegisterAndLogin = () => {
 
       <h2 className="mt-2  text-sm text-medium">Test User 1: Sean / Sean</h2>
 
-      <h2 className="mt-2 text-sm text-medium">Test User 2: BC / BC</h2>
+      <h2 className="mt-2 text-sm text-medium">Test User 2: Boning / Boning</h2>
     </div>
   );
 };

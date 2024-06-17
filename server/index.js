@@ -52,6 +52,42 @@ app.get('/profile',(req,res)=>{
     }
     
 })
+
+app.post('/register', async (req,res)=>{
+
+    const {username,password}=req.body;
+    const founduser = await User.findOne({username});
+    if(!founduser){
+         try{
+
+        const hashedPassword = bcrypt.hashSync(password, bcryptSalt);
+        const createdUser=await User.create({
+            username,
+            password:hashedPassword});
+        
+        //create a jwt then return the jwt(token)
+        jwt.sign({userId:createdUser._id,username},jwtSECRET,{},(err,token)=>{
+        if(err) throw err;
+
+        //send jwt as cookie to client
+        res.cookie('token',token,{sameSite:'none',secure:true,maxAge: 60 * 60 * 1000}).status(201).json({
+            id:createdUser._id,
+            username,
+        });
+        obj.isLogOut=false;
+    
+    })
+    }catch(err) {
+        if (err) throw err;
+        res.status(500).json('error');
+      }
+    
+    }else{
+        res.json({error:'alreadyregistered'});
+    }
+   
+});
+
 app.post('/login',async(req,res)=>{
   
     const {username,password}=req.body;
@@ -74,10 +110,10 @@ app.post('/login',async(req,res)=>{
             
           
         }else{
-            res.json('cantlogin');
+            res.json({error:'cantlogin'});
         }
     }else{
-        res.json('cantlogin');
+        res.json({error:'cantlogin'});
     }
 })
 
@@ -158,40 +194,7 @@ app.delete('/read',async(req,res)=>{
 
 })
 
-app.post('/register', async (req,res)=>{
 
-    const {username,password}=req.body;
-    const founduser = await User.findOne({username});
-    if(!founduser){
-         try{
-
-        const hashedPassword = bcrypt.hashSync(password, bcryptSalt);
-        const createdUser=await User.create({
-            username,
-            password:hashedPassword});
-        
-        //create a jwt then return the jwt(token)
-        jwt.sign({userId:createdUser._id,username},jwtSECRET,{},(err,token)=>{
-        if(err) throw err;
-
-        //send jwt as cookie to client
-        res.cookie('token',token,{sameSite:'none',secure:true,maxAge: 60 * 60 * 1000}).status(201).json({
-            id:createdUser._id,
-            username,
-        });
-        obj.isLogOut=false;
-    
-    })
-    }catch(err) {
-        if (err) throw err;
-        res.status(500).json('error');
-      }
-    
-    }else{
-        res.json('alreadyregistered');
-    }
-   
-});
 const server= app.listen(4040||process.env.PORT)
 
 const webSockectServer=new ws.WebSocketServer({server});
@@ -259,6 +262,8 @@ webSockectServer.on('connection',(connection,req)=>{
    
     //message from the client
     connection.on('message',async(data)=>{
+
+        
         const message=JSON.parse(data.toString());
         const {contact,text}=message;
       
@@ -271,7 +276,7 @@ webSockectServer.on('connection',(connection,req)=>{
                     contact});
 
                    
-                //check if have the new message all ready
+                //check if have the unreadmessage already
                 const unread=await Unread.find({
                     contactId:{$in:connection.userId },
                     currentuser:{$in:contact },
@@ -285,12 +290,7 @@ webSockectServer.on('connection',(connection,req)=>{
                 }
                 
                 
-               
-                
-                
-                
-            
-            //send the message as an object to all client's devices
+            //send the message as an object to all contact's devices
             [...webSockectServer.clients].filter(client=>client.userId===contact).forEach(client=>{
                 client.send(JSON.stringify({text,sender:connection.userId,contact,_id:createdMessage._id}))
             })
