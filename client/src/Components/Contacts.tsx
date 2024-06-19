@@ -1,6 +1,6 @@
-import axios from "axios";
+import { PeopleApi } from "../api/PeopleApi";
 import { useState, useEffect } from "react";
-
+import { User } from "../api/PeopleApi";
 import { Contact } from "./Contact";
 import { useContactsStore } from "../store/contactsStore";
 import { useUserStore } from "../store/userStore";
@@ -15,7 +15,7 @@ export const Contacts = (props: any) => {
 
   const list: any = [{ isOnline: true }, { isOnline: false }];
 
-  const [offlineContacts, setOfflineUsers] = useState([]);
+  const [offlineContacts, setOfflineUsers] = useState<User[] | never[]>([]);
 
   contactList.forEach(({ userId, username }: any) => {
     if (userId) {
@@ -32,10 +32,12 @@ export const Contacts = (props: any) => {
   //get offline list
   useEffect(() => {
     getUnread(contactId, id, handleUnReadClick);
-    axios.get("/people").then((result) => {
+    const getPeople = async () => {
+      const result = await PeopleApi.getPeople({});
       const otherUsers = result.data.filter((user: any) => user._id !== id);
       setOfflineUsers(otherUsers);
-    });
+    };
+    getPeople();
   }, []);
 
   return (

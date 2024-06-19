@@ -8,8 +8,8 @@ import noContactImg from "../assets/comments on internet.png";
 import { useChatStore } from "../store/chatStore";
 import { useContactsStore } from "../store/contactsStore";
 import { useUserStore } from "../store/userStore";
-import axios from "axios";
 
+import { LogoutApi } from "../api/LogoutApi";
 export const Chat = () => {
   const [webso, setWebSo] = useState<WebSocket | null>();
   const [contactId, setContactId] = useState<string>("");
@@ -79,12 +79,11 @@ export const Chat = () => {
   };
 
   const handleLogOut = async () => {
-    await axios.post("/logout").then((response) => {
-      if (response.data === "ok") {
-        closeWebsocket();
-        LOGOUT();
-      }
-    });
+    const response = await LogoutApi.Logout({});
+    if (response.data === "ok") {
+      closeWebsocket();
+      LOGOUT();
+    }
   };
 
   return (

@@ -21,13 +21,12 @@ export const RegisterAndLogin = () => {
 
     try {
       const url = isForLogIn ? "/login" : "/register";
-
       const data = await RegisterOrLoginApi.registerorlogin({
         url,
         username,
         password,
       });
-      console.log(data);
+
       if (data.error == "cantlogin") {
         setIsFailed(true);
         setIsLoading(false);
@@ -55,14 +54,14 @@ export const RegisterAndLogin = () => {
     LOGIN({ id: userId, username: username });
   };
   return (
-    <div className="w-screen h-screen items-center justify-center flex flex-col">
+    <div className="w-screen h-screen items-center justify-center flex flex-col bg-opacity-25  from-lime-50 ">
       <form action="" className="flex flex-col w-1/4 gap-4 min-w-72 -mt-12">
         <img src={image} alt="" className="w-1/3 mx-auto mb-12" />
 
         <div
           className={`w-full h-14 py-3 px-4 border-1.5 ${
             isFailed ? "border-rose-400" : "border-lime-300"
-          } rounded-full flex items-center gap-3`}
+          } rounded-full flex items-center gap-3 `}
           onClick={() => {
             setIsTyped(false);
           }}
@@ -77,7 +76,7 @@ export const RegisterAndLogin = () => {
               setUserName(e.target.value);
               setIsFailed(false);
             }}
-            className="w-full  border-none   bg-white  outline-none text-medium"
+            className="w-full  border-none   bg-transparent  outline-none  "
           />
         </div>
 
@@ -101,11 +100,11 @@ export const RegisterAndLogin = () => {
           <input
             type="password"
             placeholder="Password"
-            className="w-full  border-none   bg-white  outline-none text-medium"
             value={password}
             onChange={(e) => {
               setPassword(e.target.value);
             }}
+            className="w-full  border-none  bg-transparent  outline-none text-medium"
           />
         </div>
         <button
@@ -138,6 +137,7 @@ export const RegisterAndLogin = () => {
       </form>
       <div className="flex gap-2 mt-4">
         <h2>{isForLogIn ? " Dont have an account?" : "Already a member?"}</h2>
+
         <h2
           className="underline decoration-solid hover:text-lime-300"
           onClick={() => {
@@ -151,7 +151,13 @@ export const RegisterAndLogin = () => {
         </h2>
       </div>
 
-      <h2 className="mt-16  text-sm text-medium">
+      <h2 className="mt-4 text-sm text-medium h-8">
+        {isLoading
+          ? " Sorry :( It needs around half a minute to register/login."
+          : ""}
+      </h2>
+
+      <h2 className="mt-8  text-sm text-medium">
         Please use two different browsers to log in to the following two
         accounts for testing.
       </h2>
