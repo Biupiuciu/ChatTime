@@ -35,9 +35,12 @@ app.use(bodyParser.urlencoded({ extended: false }))
 const jwtSECRET=process.env.JWT_SECRET;
 const bcryptSalt = bcrypt.genSaltSync(15);
 
-
+app.get('/', (req,res)=>{
+    res.json('ok');
+    console.log('ok');
+});
 app.get('/test', (req,res)=>{
-    res.json('ok')
+    res.json('test')
 });
 app.get('/profile',(req,res)=>{
     
