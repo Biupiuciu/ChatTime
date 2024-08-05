@@ -198,7 +198,10 @@ app.delete('/read',async(req,res)=>{
 })
 
 
-const server= app.listen(4040||process.env.PORT)
+const server= app.listen(4040||process.env.PORT,()=>{
+    console.log('success');
+}
+)
 
 const webSockectServer=new ws.WebSocketServer({server});
 
