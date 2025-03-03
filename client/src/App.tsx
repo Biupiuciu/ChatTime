@@ -7,7 +7,8 @@ import { useEffect } from "react";
 import { useUserStore } from "./store/userStore";
 import { LoginApi } from "./api/LoginApi";
 function App() {
-  axios.defaults.baseURL = "https://chattime-1.onrender.com";
+  axios.defaults.baseURL = "http://52.63.94.99:4040";
+  // axios.defaults.baseURL = "https://chattime-1.onrender.com";
   //for cookies, HTTP authentication information
   axios.defaults.withCredentials = true;
   const { user, LOGIN } = useUserStore((state) => state);
