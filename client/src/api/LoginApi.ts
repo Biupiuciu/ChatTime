@@ -13,6 +13,7 @@ interface LoginResponse{
 const login = async (request: LoginRequest): Promise<LoginResponse> => {
     const response = await axios.get("/profile");
         const { data } = response.data;
+        console.log(data);
     return data
 }
 
